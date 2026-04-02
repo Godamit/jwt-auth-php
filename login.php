@@ -1,14 +1,24 @@
-
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
 require 'db.php';
 require_once __DIR__ . '/jwt.php';
 
 $message = "";
+$messageClass = "";
+
+// If already logged in, redirect to dashboard
+if (isset($_COOKIE['token'])) {
+    try {
+        verifyJWT($_COOKIE['token']);
+        header("Location: dashboard.php");
+        exit;
+    } catch (Exception $e) {
+        // Token invalid, continue to login
+    }
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -30,9 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // generate JWT
             $token = generateJWT($user["id"], $email);
-            // echo $token;
-            // exit;
-            
+
             // store JWT in cookie
             setcookie(
                 "token",
@@ -49,38 +57,44 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
 
         } else {
-            $message = "Invalid credentials";
+            $message = "Invalid email or password.";
+            $messageClass = "error-msg";
         }
     } else {
-        $message = "Invalid credentials";
+        $message = "Invalid email or password.";
+        $messageClass = "error-msg";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - JWT Auth</title>
     <link rel="stylesheet" href="css/style.css">
-    <title>Login</title>
 </head>
 <body>
-<!-- <button onclick="toggleTheme()">Toggle Theme</button> -->
 
+<div class="card">
+    <h2>Welcome Back</h2>
+    <p>Enter your credentials to access your account.</p>
 
-<div class="card login">
+    <form method="POST">
+        <input type="email" name="email" placeholder="Email Address" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
 
-<h2>Login</h2>
+    <?php if ($message): ?>
+        <p class="<?php echo $messageClass; ?>" style="margin-top: 15px;"><?php echo htmlspecialchars($message); ?></p>
+    <?php endif; ?>
 
-<form method="POST">
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-</form>
-
-<p><?php echo $message; ?></p>
-
-<a href="register.php">Create new account</a>
-
+    <a href="register.php">Don't have an account? Register</a>
+    <br>
+    <a href="index.php" style="color: #71717a;">Back to Home</a>
 </div>
+
 </body>
 </html>

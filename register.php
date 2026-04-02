@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/db.php';
 
 $message = "";
+$messageClass = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -16,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // basic validation
     if (empty($email) || empty($password)) {
         $message = "All fields are required";
+        $messageClass = "error-msg";
     } else {
 
         // 1️⃣ check if email already exists
@@ -26,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($check->num_rows > 0) {
             $message = "Email already exists";
+            $messageClass = "error-msg";
         } else {
 
             // 2️⃣ hash password
@@ -38,9 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->bind_param("ss", $email, $hashedPassword);
 
             if ($stmt->execute()) {
-                $message = "Registration successful";
+                $message = "Registration successful! You can now login.";
+                $messageClass = "success-msg";
             } else {
-                $message = "Something went wrong";
+                $message = "Something went wrong. Please try again.";
+                $messageClass = "error-msg";
             }
         }
     }
@@ -48,27 +53,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - JWT Auth</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="card register">
+<div class="card">
+    <h2>Create Account</h2>
+    <p>Join us today to get started.</p>
 
-<h2>Register</h2>
+    <form method="POST">
+        <input type="email" name="email" placeholder="Email Address" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Register</button>
+    </form>
 
-<form method="POST">
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Register</button>
-</form>
+    <?php if ($message): ?>
+        <p class="<?php echo $messageClass; ?>" style="margin-top: 15px;"><?php echo htmlspecialchars($message); ?></p>
+    <?php endif; ?>
 
-<p><?php echo htmlspecialchars($message); ?></p>
-
-<a href="login.php">Already have an account?</a>
-
+    <a href="login.php">Already have an account? Login</a>
+    <br>
+    <a href="index.php" style="color: #71717a;">Back to Home</a>
 </div>
 
 </body>

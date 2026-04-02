@@ -6,35 +6,36 @@ error_reporting(E_ALL);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="css/style.css">
-    <title>Dashboard</title>
-</head>
-<?php
-require 'auth.php';
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JWT Auth</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="card dashboard">
+<div class="card">
+    <h2>User Dashboard</h2>
+    <p>Welcome to your secure area. This page is protected by a JSON Web Token.</p>
 
-<h2>Dashboard</h2>
+    <div class="user-info">
+        <span>User Identifier</span>
+        <strong>ID: <?php echo htmlspecialchars($user_id); ?></strong>
+    </div>
 
-<p><strong>User ID:</strong> <?php echo $user_id; ?></p>
-<p><strong>Email:</strong> <?php echo $email; ?></p>
+    <div class="user-info">
+        <span>Email Address</span>
+        <strong><?php echo htmlspecialchars($email); ?></strong>
+    </div>
 
-<a href="logout.php">Logout</a>
+    <div style="margin-top: 30px;">
+        <a href="logout.php" class="btn btn-secondary">Logout</a>
+    </div>
 
+    <br>
+    <a href="index.php" style="color: #71717a;">Back to Home</a>
 </div>
 
 </body>
-</html>
-
 </html>
